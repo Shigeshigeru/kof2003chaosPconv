@@ -1,0 +1,1 @@
+gcc 2k3toa2003encrypt.c -o 2k3toa2003encrypt
