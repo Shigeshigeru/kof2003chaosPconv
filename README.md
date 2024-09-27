@@ -10,3 +10,6 @@ Use at your own risk.
 もうすぐ消える予定です
 
 必要なら各自保存しておいてください
+
+Deleted the executable file.
+If necessary, please build it yourself.
