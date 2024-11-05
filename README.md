@@ -15,3 +15,5 @@ Use at your own risk.
 
 Deleted the executable file.
 If necessary, please build it yourself.
+
+自分用にとりあえず置いてますがソースのみです
