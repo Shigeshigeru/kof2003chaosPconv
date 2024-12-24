@@ -1,0 +1,28 @@
+
+
+These roms have been tested and work fine as input:
+
+268-p1d.bin size 8388608 crc 16c063a9 sha1 5432869f830eed816ee5ed71c7fd39f749d15619
+
+268-p1d.bin size 5242880 crc 5e8f307e sha1 49bcc5d082979ddd63994f36d3ae766d96f85ae9
+
+268-p1d.bin size 8388608 crc 2ecc772d sha1 971db65d11aa98833c494fc2d7657cea702e4caa
+
+268-p1d.bin size 5242880 crc 83270fef sha1 2f18c1a880b42e0faa6396c0fc90bb02bf4d24b1
+
+If your rom isn't listed above, give it a try, it may work
+(or not, you never know unless you try ;) ).
+
+
+
+Make sure your p1 is named 268-p1d.bin, run ms5pcnv.exe,
+and you should get these files:
+
+rom ( name 268-p1cr.bin size 4194304 crc d0466792 sha1 880819933d997fab398f91061e9dbccb959ae8a1 )
+rom ( name 268-p2cr.bin size 4194304 crc fbf6b61e sha1 9ec743d5988b5e3183f37f8edf45c72a8c0c893e )
+
+
+ - IQ_132
+
+
+PS. Thanks to Halrin for the original mslug5 Px decrypt routine :)
