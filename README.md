@@ -1,6 +1,9 @@
 # kof2003chaosPconv
 kof2003(AES,MVS) svc chaos mslug5 PROM Encryption tools
 
+AIの力によりMAMEのソースコードから新規で作り直す予定です  
+どちらにせよIQさんありがとう！！  
+
 Disclaimer
 
 The original author is Mr. IQ. Thank you.
