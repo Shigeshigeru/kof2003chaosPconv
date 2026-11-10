@@ -7,7 +7,7 @@ ChatGPTでGUI版も作ったのですがこれも似たようなことでミス�
 (無料待機時間が長い  
 
 対応ゲームは  
-kof2003(AES,MVS),Metal Slug 5(AES,MVS),SVC Chaos(AES,MVS,JAMMA)  
+kof2003(AES,MVS),Metal Slug 5(AES,~~MVS~~),SVC Chaos(AES,MVS,JAMMA)  
 PROMのみの対応になります  
 特に以前のものと作成されるものは変更ない予定です    
 自分の研究用にバンクスイッチ潰したkof2003等も入るかもしれませんが  
