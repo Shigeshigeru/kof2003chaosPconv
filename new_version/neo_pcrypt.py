@@ -33,18 +33,6 @@ MB = 0x100000
 
 # ---------------------------------------------------------------- 定義 ----
 GAMES = {
-    "svc": dict(
-        desc="SVC CHAOS (MVS/AES)", size=0x800000, ext=False,
-        xor1=bytes([0x3b, 0x6a, 0xf7, 0xb7, 0xe8, 0xa9, 0x20, 0x99, 0x9f, 0x39, 0x34, 0x0c, 0xc3, 0x9a, 0xa5, 0xc8,
-                    0xb8, 0x18, 0xce, 0x56, 0x94, 0x44, 0xe3, 0x7a, 0xf7, 0xdd, 0x42, 0xf0, 0x18, 0x60, 0x92, 0x9f]),
-        xor2=bytes([0x69, 0x0b, 0x60, 0xd6, 0x4f, 0x01, 0x40, 0x1a, 0x9f, 0x0b, 0xf0, 0x75, 0x58, 0x0e, 0x60, 0xb4,
-                    0x14, 0x04, 0x20, 0xe4, 0xb9, 0x0d, 0x10, 0x89, 0xeb, 0x07, 0x30, 0x90, 0x50, 0x0e, 0x20, 0x26]),
-        p16=(15, 14, 13, 12, 10, 11, 8, 9, 6, 7, 4, 5, 3, 2, 1, 0),
-        sw_a=(7, 6, 5, 4, 2, 3, 0, 1), xor_b=0xa00, sw_b=(4, 5, 6, 7, 1, 0, 3, 2),
-        files=("269-p1.p1", "269-p2.p2", None)),
-    "svcpcba": dict(    # 暗号化ルーチンは svc と同一 (ファイル名のみ JAMMA PCB set 2)
-        desc="SVC CHAOS (JAMMA PCB set 2)", base="svc",
-        files=("269-p1a.p1", "269-p2a.p2", None)),
     "mslug5": dict(
         desc="Metal Slug 5 (MVS)", size=0x800000, ext=False,
         xor1=bytes([0xc2, 0x4b, 0x74, 0xfd, 0x0b, 0x34, 0xeb, 0xd7, 0x10, 0x6d, 0xf9, 0xce, 0x5d, 0xd5, 0x61, 0x29,
@@ -54,12 +42,21 @@ GAMES = {
         p16=(15, 14, 13, 12, 10, 11, 8, 9, 6, 7, 4, 5, 3, 2, 1, 0),
         sw_a=(7, 6, 5, 4, 1, 0, 3, 2), xor_b=0x700, sw_b=(5, 4, 7, 6, 1, 0, 3, 2),
         files=("268-p1cr.p1", "268-p2cr.p2", None)),
+    "svc": dict(
+        desc="SVC CHAOS (MVS/AES)", size=0x800000, ext=False,
+        xor1=bytes([0x3b, 0x6a, 0xf7, 0xb7, 0xe8, 0xa9, 0x20, 0x99, 0x9f, 0x39, 0x34, 0x0c, 0xc3, 0x9a, 0xa5, 0xc8,
+                    0xb8, 0x18, 0xce, 0x56, 0x94, 0x44, 0xe3, 0x7a, 0xf7, 0xdd, 0x42, 0xf0, 0x18, 0x60, 0x92, 0x9f]),
+        xor2=bytes([0x69, 0x0b, 0x60, 0xd6, 0x4f, 0x01, 0x40, 0x1a, 0x9f, 0x0b, 0xf0, 0x75, 0x58, 0x0e, 0x60, 0xb4,
+                    0x14, 0x04, 0x20, 0xe4, 0xb9, 0x0d, 0x10, 0x89, 0xeb, 0x07, 0x30, 0x90, 0x50, 0x0e, 0x20, 0x26]),
+        p16=(15, 14, 13, 12, 10, 11, 8, 9, 6, 7, 4, 5, 3, 2, 1, 0),
+        sw_a=(7, 6, 5, 4, 2, 3, 0, 1), xor_b=0xa00, sw_b=(4, 5, 6, 7, 1, 0, 3, 2),
+        files=("269-p1.p1", "269-p2.p2", None)),
     "mslug5h": dict(    # 暗号化ルーチンは mslug5 と同一 (ファイル名のみ家庭用)
         desc="Metal Slug 5 (AES)", base="mslug5",
         files=("268-p1c.p1", "268-p2c.p2", None)),
-    "ms5pcb":  dict(    # 暗号化ルーチンは mslug5 と同一 (ファイル名のみJAMMA用)
-        desc="Metal Slug 5 (JAMMA PCB)", base="ms5pcb",
-        files=("268-p1r.p1", "268-p2r.p2", None)),
+    "svcpcba": dict(    # 暗号化ルーチンは svc と同一 (ファイル名のみ JAMMA PCB set 2)
+        desc="SVC CHAOS (JAMMA PCB set 2 / svcpcba)", base="svc",
+        files=("269-p1a.p1", "269-p2a.p2", None)),
     "kof2003": dict(
         desc="KOF2003 (MVS)", size=0x900000, ext=True,
         xor1=bytes([0x3b, 0x6a, 0xf7, 0xb7, 0xe8, 0xa9, 0x20, 0x99, 0x9f, 0x39, 0x34, 0x0c, 0xc3, 0x9a, 0xa5, 0xc8,
@@ -238,6 +235,75 @@ def split_files(M, g):
     return out
 
 
+def join_files(blobs, g):
+    """p1/p2(/p3) ファイル内容(68000ビッグエンディアン) -> メモリ(M)   (split_files の逆)"""
+    p1, p2 = blobs[0], blobs[1]
+    b8 = bytearray(0x800000)
+    b8[0::4], b8[1::4] = p1[0::2], p1[1::2]
+    b8[2::4], b8[3::4] = p2[0::2], p2[1::2]
+    B = bytearray(g["size"])
+    B[:0x800000] = b8
+    if g["ext"]:
+        B[0x800000:0x900000] = blobs[2]
+    return swap16(B)
+
+
+def known_hash_check(game, blobs):
+    """入力ファイルを内蔵の正規ハッシュと照合し [(crc, sha1, 判定), ...] を返す"""
+    known = KNOWN_HASH.get(game, (None, None, None))
+    out = []
+    for k, blob in enumerate(blobs):
+        blob = bytes(blob)
+        crc = zlib.crc32(blob) & 0xffffffff
+        sha = hashlib.sha1(blob).hexdigest()
+        if known[k] is None:
+            verdict = None
+        else:
+            verdict = "OK" if (crc == known[k][0] and sha == known[k][1]) else "NG"
+        out.append((crc, sha, verdict))
+    return out
+
+
+def decrypt_files(game, blobs, swap_in=True, out_order="be", layout="mame", log=print):
+    """
+    暗号化済み p1/p2(/p3) -> 復号済みP-ROM (convert の逆変換)
+    swap_in : 入力ファイルが2バイトスワップ済み(MAME形式, 既定)か
+    out_order: 出力のバイト順 be=00 10 F3 00 / le=ワードスワップ
+    layout  : mame=MAME復号後メモリ / complete=268-p1d.bin形式(mslug5専用)
+    """
+    g = GAMES[game]
+    if layout == "complete" and game != "mslug5":
+        raise ValueError("completeレイアウトは mslug5 (MVS版) 専用です。")
+    need = [0x400000, 0x400000] + ([0x100000] if g["ext"] else [])
+    if len(blobs) != len(need):
+        raise ValueError("%s には %d 個のファイル(p1/p2%s)が必要です。"
+                         % (game, len(need), "/p3" if g["ext"] else ""))
+    for k, (b, n) in enumerate(zip(blobs, need)):
+        if len(b) != n:
+            raise ValueError("p%d のサイズが %d バイトです。%d バイトが必要です。" % (k + 1, len(b), n))
+
+    for k, (crc, sha, verdict) in enumerate(known_hash_check(game, blobs)):
+        tag = {"OK": "正規ROMと一致", "NG": "正規ROMと不一致", None: "照合先なし"}[verdict]
+        log("入力 p%d: CRC32=%08x  SHA1=%s  [%s]" % (k + 1, crc, sha, tag))
+
+    blobs = [bytearray(b) for b in blobs]
+    if swap_in:
+        blobs = [swap16(b) for b in blobs]
+        log("入力の2バイトスワップを戻しました")
+    D = mame_decrypt(join_files(blobs, g), g)     # MAMEメモリ(復号後)
+
+    if layout == "complete":
+        C = bytearray(0x800000)
+        C[0:MB] = D[0:MB]
+        C[MB:0x700000] = D[2 * MB:0x800000]
+        C[0x700000:0x800000] = D[MB:2 * MB]
+        D = C
+        log("出力レイアウト: complete (268-p1d.bin形式)")
+    out = swap16(D) if out_order == "be" else D
+    log("出力バイト順: %s" % ("68000ネイティブ(BE)" if out_order == "be" else "ワードスワップ"))
+    return bytes(out)
+
+
 def parse_crc_list(text):
     """'aabbccdd,11223344,' -> (0xaabbccdd, 0x11223344, None)"""
     out = []
@@ -248,14 +314,26 @@ def parse_crc_list(text):
 
 
 def convert(game, data, order="auto", swap_out=True, names=None,
-            expect_crc=None, verify=True, log=print):
+            expect_crc=None, verify=True, log=print, layout="mame",
+            ms5_aesfix=False, ms5_fillff=False, ms5_autofix=False):
     """
     変換本体 (CLI/GUI共通)。戻り値: [(ファイル名, bytes, crc32, sha1, 判定), ...]
     判定: "OK" / "NG" / None(照合先なし)
     """
     g = GAMES[game]
     data = bytearray(data)
-    if len(data) != g["size"]:
+    if (layout == "complete" or ms5_aesfix or ms5_fillff or ms5_autofix) and game != "mslug5":
+        raise ValueError("completeレイアウトとIQ互換オプションは mslug5 (MVS版) 専用です。")
+    if (ms5_fillff or ms5_autofix) and layout != "complete":
+        raise ValueError("0xFF埋めと入力自動補正は --layout complete のときだけ使えます。")
+    if layout == "complete":
+        # メタスラコンプリート用 268-p1d.bin 形式 (IQ_132氏のms5hpcnv.c と同じ並び):
+        #   0-1MB=固定, 1MB以降=バンクデータ (MAMEメモリでは2MB以降に来る分)
+        if not 0x500000 <= len(data) <= 0x800000:
+            raise ValueError("completeレイアウトの入力は 5MB〜8MB が必要です (現在 %d バイト)。" % len(data))
+        data += b"\xff" * (0x800000 - len(data))
+        log("入力レイアウト: complete (268-p1d.bin形式, 不足分は0xFFで補完)")
+    elif len(data) != g["size"]:
         raise ValueError("サイズが %d バイトです。%s は %d バイト(%dMB)が必要です。"
                          % (len(data), game, g["size"], g["size"] // MB))
 
@@ -270,7 +348,33 @@ def convert(game, data, order="auto", swap_out=True, names=None,
                              "バイト順を手動で指定してください。" % head4.hex(" "))
     log("入力バイト順: %s" % ("68000ネイティブ(BE)" if order == "be" else "ワードスワップ"))
     D = swap16(data) if order == "be" else data      # 内部表現(MAMEメモリ)へ
+    if layout == "complete":                         # MAME復号後の並びへ変換
+        C = D
+        if ms5_autofix:                              # IQ_132氏のコードと同じ自動判別
+            if C[0x300007] == 0x57:
+                log("入力の並び判定: 正常 (補正なし)")
+            elif C[0x400007] == 0x57:
+                log("入力の並び判定: エミュレータのRAM保存と判断し補正")
+                C[0x100000:0x700000] = C[0x200000:0x800000]
+            elif C[0x200007] == 0x57:
+                log('入力の並び判定: "bootleg" Pと判断し補正')
+                C[0x200000:0x300000], C[0x300000:0x400000] = \
+                    C[0x300000:0x400000], C[0x200000:0x300000]
+            else:
+                log("入力の並び判定: 該当なし (補正なし)")
+        if ms5_fillff:
+            C[0x500000:0x800000] = b"\xff" * 0x300000
+            log("0x500000-0x7FFFFF を 0xFF で埋めました")
+        D = bytearray(0x800000)
+        D[0:MB] = C[0:MB]
+        D[MB:2 * MB] = C[0x700000:0x800000]
+        D[2 * MB:0x800000] = C[MB:0x700000]
 
+    if ms5_aesfix:                                   # 内部表現(MAMEメモリ)上の 67 00 00 34
+        D[0x122A:0x122E] = b"\x00\x67\x34\x00"
+        log("AES Fix を除去 (0x122A: beq パッチ) を適用")
+    if ms5_aesfix or ms5_fillff or ms5_autofix:
+        log("注意: データを書き換えるため、正規ROMとのCRC/SHA1は一致しません")
     M = mame_encrypt(D, g)
     if verify:
         if mame_decrypt(M, g) != D:
@@ -327,7 +431,16 @@ def run_cli():
     ap.add_argument("game", choices=GAMES.keys(),
                     help="kof2003=MVS / kof2003h=AES / svc / svcpcba=JAMMA set2 / "
                          "mslug5=MVS / mslug5h=AES")
-    ap.add_argument("input", help="復号済みP-ROM (KOF2003:9MB, SVC/MSLUG5:8MB)")
+    ap.add_argument("input", nargs="+",
+                    help="暗号化時: 復号済みP-ROM 1個 (KOF2003:9MB, SVC/MSLUG5:8MB) / "
+                         "復号時(-d): p1 p2 [p3] の順にファイルを指定")
+    ap.add_argument("-d", "--decrypt", action="store_true",
+                    help="復号モード: 暗号化済みp1/p2(/p3) から復号済みP-ROMを作る")
+    ap.add_argument("--no-swap-in", dest="swap_in", action="store_false",
+                    help="[復号時] 入力が2バイトスワップ済みでない場合に指定 (既定: スワップ済み=MAME形式)")
+    ap.add_argument("--out-order", choices=["be", "le"], default="be",
+                    help="[復号時] 出力のバイト順 be=00 10 F3 00 / le=ワードスワップ (既定: be)")
+    ap.add_argument("--outname", help="[復号時] 出力ファイル名 (既定: <セット名>_decrypted.bin)")
     ap.add_argument("-o", "--outdir", default=".", help="出力先フォルダ")
     ap.add_argument("--order", choices=["auto", "be", "le"], default="auto",
                     help="入力のバイト順 be=00 10 F3 00 / le=ワードスワップ (既定: 自動)")
@@ -335,12 +448,45 @@ def run_cli():
                     help="出力直前の2バイトスワップを行わない (既定: 行う)")
     ap.add_argument("--names", help="出力ファイル名を p1,p2[,p3] の順にカンマ区切りで指定")
     ap.add_argument("--crc", help="内蔵値の代わりに使う期待CRC32を p1,p2[,p3] の順に16進で指定")
+    ap.add_argument("--layout", choices=["mame", "complete"], default="mame",
+                    help="暗号化時は入力、復号時は出力の並び mame=MAME復号後メモリ / complete=メタスラコンプリートの"
+                         "268-p1d.bin形式(5〜8MB, mslug5(MVS)専用)")
+    ap.add_argument("--ms5-aesfix", action="store_true",
+                    help="[mslug5専用] 0x122AのAES Fixを除去するパッチを当てる")
+    ap.add_argument("--ms5-fillff", action="store_true",
+                    help="[mslug5専用/complete限定] 0x500000-0x7FFFFFを0xFFで埋める")
+    ap.add_argument("--ms5-autofix", action="store_true",
+                    help="[mslug5専用/complete限定] RAM保存・bootleg形式の並びを自動補正")
+    ap.add_argument("--iq-compat", action="store_true",
+                    help="[mslug5専用] --layout complete と上記3つをすべて有効にする")
     ap.add_argument("--no-verify", action="store_true", help="往復検証を省略")
     a = ap.parse_args()
+    if a.iq_compat:
+        a.layout = "complete"
+        if not a.decrypt:
+            a.ms5_aesfix, a.ms5_fillff, a.ms5_autofix = True, True, True
+    if a.decrypt:
+        if a.ms5_aesfix or a.ms5_fillff or a.ms5_autofix:
+            sys.exit("エラー: パッチ系オプションは復号時には使えません。")
+        try:
+            blobs = [open(p, "rb").read() for p in a.input]
+            out = decrypt_files(a.game, blobs, a.swap_in, a.out_order, a.layout)
+        except (ValueError, RuntimeError, OSError) as e:
+            sys.exit("エラー: %s" % e)
+        os.makedirs(a.outdir, exist_ok=True)
+        path = os.path.join(a.outdir, a.outname or "%s_decrypted.bin" % a.game)
+        with open(path, "wb") as f:
+            f.write(out)
+        print("出力: %s (%d bytes)" % (path, len(out)))
+        return
+    if len(a.input) != 1:
+        sys.exit("エラー: 暗号化時の入力ファイルは1個です (復号するなら -d を付けてください)。")
     try:
-        res = convert(a.game, open(a.input, "rb").read(), a.order, a.swap_out,
+        res = convert(a.game, open(a.input[0], "rb").read(), a.order, a.swap_out,
                       a.names.split(",") if a.names else None,
-                      parse_crc_list(a.crc) if a.crc else None, not a.no_verify)
+                      parse_crc_list(a.crc) if a.crc else None, not a.no_verify,
+                      layout=a.layout, ms5_aesfix=a.ms5_aesfix,
+                      ms5_fillff=a.ms5_fillff, ms5_autofix=a.ms5_autofix)
     except (ValueError, RuntimeError, OSError) as e:
         sys.exit("エラー: %s" % e)
     write_results(res, a.outdir)
@@ -365,7 +511,16 @@ def run_gui():
     v_in = tk.StringVar()
     v_out = tk.StringVar()
     v_order = tk.StringVar(value="auto")
+    v_layout = tk.StringVar(value="mame")
+    v_aes = tk.BooleanVar(value=False)
+    v_ff = tk.BooleanVar(value=False)
+    v_auto = tk.BooleanVar(value=False)
     v_verify = tk.BooleanVar(value=True)
+    v_dec = tk.BooleanVar(value=False)
+    v_p2 = tk.StringVar()
+    v_p3 = tk.StringVar()
+    v_decname = tk.StringVar()
+    v_outorder = tk.StringVar(value="be")
     v_names = [tk.StringVar() for _ in range(3)]
     v_crcs = [tk.StringVar() for _ in range(3)]
     pad = dict(padx=6, pady=3)
@@ -375,11 +530,32 @@ def run_gui():
 
     def on_set(*_):
         g = GAMES[cur_key()]
+        is_ms5 = cur_key() == "mslug5"
+        if not is_ms5:                       # MVS版メタスラ5以外では選べない
+            v_layout.set("mame")
+            v_aes.set(False)
+            v_ff.set(False)
+            v_auto.set(False)
+        cb_layout.config(values=["mame", "complete"] if is_ms5 else ["mame"])
+        decm = v_dec.get()
+        for c in chk_ms5:
+            c.config(state="normal" if (is_ms5 and not decm) else "disabled")
+        for w in ent_dec[:-1]:
+            w.config(state="normal" if decm else "disabled")
+        ent_dec[-1].config(state="readonly" if decm else "disabled")
+        if decm and not g["ext"]:
+            ent_dec[2].config(state="disabled")      # p3 入力欄 (p3なしのセット)
+            ent_dec[3].config(state="disabled")
+        lbl_layout.config(text="出力レイアウト" if decm else "入力レイアウト")
+        btn.config(text="復号開始" if decm else "変換開始")
+        if decm and not v_decname.get():
+            v_decname.set("%s_decrypted.bin" % cur_key())
         for k in range(3):
             v_names[k].set(g["files"][k] or "")
             ent_n[k].config(state="normal" if g["files"][k] else "disabled")
             ent_c[k].config(state="normal" if g["files"][k] else "disabled")
-        lbl_size.config(text="入力サイズ: %d MB (%d バイト)" % (g["size"] // MB, g["size"]))
+        lbl_size.config(text="入力サイズ: %d MB (%d バイト)%s" % (
+            g["size"] // MB, g["size"], " / complete形式は5〜8MB" if is_ms5 else ""))
 
     ttk.Label(root, text="対象セット").grid(row=0, column=0, sticky="e", **pad)
     cb = ttk.Combobox(root, textvariable=v_set, values=labels, state="readonly", width=52)
@@ -410,8 +586,21 @@ def run_gui():
     ttk.Label(root, text="入力バイト順").grid(row=4, column=0, sticky="e", **pad)
     ttk.Combobox(root, textvariable=v_order, values=["auto", "be", "le"], state="readonly",
                  width=8).grid(row=4, column=1, sticky="w", **pad)
-    ttk.Label(root, text="※ 出力直前に2バイトスワップを常に適用します"
-            ).grid(row=5, column=1, columnspan=2, sticky="w", **pad)
+    lbl_layout = ttk.Label(root, text="入力レイアウト")
+    lbl_layout.grid(row=5, column=0, sticky="e", **pad)
+    cb_layout = ttk.Combobox(root, textvariable=v_layout, values=["mame", "complete"],
+                             state="readonly", width=10)
+    cb_layout.grid(row=5, column=1, sticky="w", **pad)
+    ttk.Label(root, text="※出力は常に2バイトスワップ").grid(row=5, column=2, sticky="e", **pad)
+    ms5 = ttk.LabelFrame(root, text="メタルスラッグ5 (MVS) 専用: IQ_132氏ツール互換")
+    ms5.grid(row=10, column=0, columnspan=3, sticky="we", **pad)
+    chk_ms5 = [
+        ttk.Checkbutton(ms5, text="AES Fix除去パッチ (0x122A)", variable=v_aes),
+        ttk.Checkbutton(ms5, text="0x500000-0x7FFFFF を 0xFF で埋める (completeのみ)", variable=v_ff),
+        ttk.Checkbutton(ms5, text="RAM保存/bootleg形式を自動補正 (completeのみ)", variable=v_auto),
+    ]
+    for k, c in enumerate(chk_ms5):
+        c.grid(row=k, column=0, sticky="w", **pad)
     ttk.Checkbutton(root, text="往復検証を行う", variable=v_verify
                     ).grid(row=6, column=1, columnspan=2, sticky="w", **pad)
 
@@ -428,19 +617,64 @@ def run_gui():
         ent_n.append(e1)
         ent_c.append(e2)
 
+    dec = ttk.LabelFrame(root, text="復号モード (暗号化済み p1/p2/p3 → 復号済みP-ROM)")
+    dec.grid(row=9, column=0, columnspan=3, sticky="we", **pad)
+    dec.columnconfigure(1, weight=1)
+
+    def pick_file(var):
+        p = filedialog.askopenfilename(title="暗号化済みファイルを選択")
+        if p:
+            var.set(p)
+
+    ttk.Checkbutton(dec, text="復号モードにする (上の「入力ファイル」= p1)", variable=v_dec,
+                    command=lambda: on_set()).grid(row=0, column=0, columnspan=3, sticky="w", **pad)
+    ent_dec = []
+    for r, (t, var) in enumerate((("入力 p2", v_p2), ("入力 p3", v_p3)), start=1):
+        ttk.Label(dec, text=t).grid(row=r, column=0, sticky="e", **pad)
+        e = ttk.Entry(dec, textvariable=var)
+        e.grid(row=r, column=1, sticky="we", **pad)
+        b = ttk.Button(dec, text="参照...", command=lambda v=var: pick_file(v))
+        b.grid(row=r, column=2, **pad)
+        ent_dec += [e, b]
+    ttk.Label(dec, text="出力ファイル名").grid(row=3, column=0, sticky="e", **pad)
+    e = ttk.Entry(dec, textvariable=v_decname)
+    e.grid(row=3, column=1, sticky="we", **pad)
+    ent_dec.append(e)
+    ttk.Label(dec, text="出力バイト順").grid(row=4, column=0, sticky="e", **pad)
+    c = ttk.Combobox(dec, textvariable=v_outorder, values=["be", "le"], state="readonly", width=6)
+    c.grid(row=4, column=1, sticky="w", **pad)
+    ent_dec.append(c)
+
     logbox = scrolledtext.ScrolledText(root, height=12, width=80, state="disabled")
-    logbox.grid(row=9, column=0, columnspan=3, sticky="nsew", **pad)
-    root.rowconfigure(9, weight=1)
+    logbox.grid(row=11, column=0, columnspan=3, sticky="nsew", **pad)
+    root.rowconfigure(11, weight=1)
     q = queue.Queue()
 
     def log(msg):
         q.put(msg)
 
+    def work_dec(key, paths, outdir):
+        try:
+            out = decrypt_files(key, [open(p, "rb").read() for p in paths], True,
+                                v_outorder.get(), v_layout.get(), log)
+            os.makedirs(outdir, exist_ok=True)
+            path = os.path.join(outdir, v_decname.get() or "%s_decrypted.bin" % key)
+            with open(path, "wb") as f:
+                f.write(out)
+            log("出力: %s (%d bytes)" % (path, len(out)))
+            log("完了")
+        except Exception as e:                       # noqa
+            log("エラー: %s" % e)
+        finally:
+            q.put("__done__")
+
     def work(key, path, outdir):
         try:
             crcs = parse_crc_list(",".join(v.get() for v in v_crcs))
             res = convert(key, open(path, "rb").read(), v_order.get(), True,
-                          [v.get() for v in v_names], crcs, v_verify.get(), log)
+                          [v.get() for v in v_names], crcs, v_verify.get(), log,
+                          layout=v_layout.get(), ms5_aesfix=v_aes.get(),
+                          ms5_fillff=v_ff.get(), ms5_autofix=v_auto.get())
             write_results(res, outdir, log)
             bad = [r[0] for r in res if r[4] == "NG"]
             log("完了" if not bad else "完了 (正規ROMと不一致: %s)" % ", ".join(bad))
@@ -454,11 +688,21 @@ def run_gui():
             messagebox.showerror("エラー", "入力ファイルを選択してください。")
             return
         outdir = v_out.get() or os.path.dirname(v_in.get())
+        if v_dec.get():
+            paths = [v_in.get(), v_p2.get()] + ([v_p3.get()] if GAMES[cur_key()]["ext"] else [])
+            if not all(p and os.path.isfile(p) for p in paths):
+                messagebox.showerror("エラー", "p1/p2%sのファイルをすべて選択してください。"
+                                     % ("/p3" if GAMES[cur_key()]["ext"] else ""))
+                return
+            btn.config(state="disabled")
+            log("---- %s (復号) ----" % cur_key())
+            threading.Thread(target=work_dec, args=(cur_key(), paths, outdir), daemon=True).start()
+            return
         btn.config(state="disabled")
         log("---- %s ----" % cur_key())
         threading.Thread(target=work, args=(cur_key(), v_in.get(), outdir), daemon=True).start()
 
-    btn = ttk.Button(root, text="暗号化開始", command=start)
+    btn = ttk.Button(root, text="変換開始", command=start)
     btn.grid(row=8, column=1, **pad)
 
     def poll():
