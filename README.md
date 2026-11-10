@@ -2,6 +2,7 @@
 kof2003(AES,MVS) svc chaos mslug5 PROM Encryption tools
 
 AIの力によりMAMEのソースコードから新規で作り直す予定です  
+(作り直しましたが現状ミスだらけなのでスイマセン、修正しておきます)  
 
 対応ゲームは  
 kof2003(AES,MVS),Metal Slug 5(AES,MVS),SVC Chaos(AES,MVS,JAMMA)  
