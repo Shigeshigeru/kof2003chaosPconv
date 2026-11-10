@@ -16,6 +16,8 @@ SROMのやつはネオジオCROM統合ツールにまとめたいです
 最終的には全部まとめた上Geolith用変換もつけたいです  
 暇な時があればやる予定  
 
+一応旧版も参考用に残してあります
+
 Disclaimer
 
 The original author is Mr. IQ. Thank you.
