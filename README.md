@@ -6,7 +6,7 @@ AIの力によりMAMEのソースコードから新規で作り直しました
 対応ゲームは  
 kof2003(AES,MVS),Metal Slug 5(AES,MVS),SVC Chaos(AES,MVS,JAMMA2)  
 PROMのみの対応になります  
-その他のROMはscrap_aさんのneo-cmcで変換できるので  
+その他のCROM等はscrap_aさんのneo-cmcで変換できるので  
 よろしくお願いいたします  
 あくまで以前のツールを新規でまとめたものになります  
 以前のものと作成されるものは同じですが  
